@@ -1,7 +1,7 @@
+import xgboost as xgb
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import numpy as np
 import pickle
 
 app = FastAPI(docs_url="/api/py/docs")
@@ -18,15 +18,8 @@ app.add_middleware(
 )
 
 
-@app.get('/home')
-def home():
-    return {
-        "msg": "Hello"
-    }
-
-
-with open('api/fraud_detection_model.pkl', 'rb') as file:
-    model = pickle.load(file)
+model = xgb.Booster()
+model.load_model("api/model.json")
 
 
 class TransactionData(BaseModel):
@@ -48,11 +41,13 @@ def get_prediction(amount, sender_prev_bal, receiver_prev_bal, transaction_type)
     for col in expected_cols:
         raw_features.append(int(transaction_type.upper() == col))
 
-    features = np.array(raw_features).reshape(1, -1)
+    features = xgb.DMatrix([raw_features])
 
     try:
-        prediction = model.predict_proba(features)[0]
-        return prediction.tolist()
+        proba_full = model.predict(features)
+        print(1-proba_full[0], proba_full[0])
+
+        return 1-proba_full[0], proba_full[0]
     except Exception as e:
         print(str(e))
 
@@ -63,8 +58,8 @@ def predict(data: TransactionData):
         notFraud, fraud = get_prediction(
             data.amount, data.sender_prev_bal, data.receiver_prev_bal, data.type)
         return {
-            "not_fraud": notFraud,
-            "fraud": fraud
+            "not_fraud": float(notFraud),
+            "fraud": float(fraud)
         }
     except Exception as e:
         return {'error': str(e)}
