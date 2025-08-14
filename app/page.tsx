@@ -73,16 +73,6 @@ export default function Page() {
     }
   };
 
-  const featureImportance = {
-    amount: 0.21,
-    sender_prev_bal: 0.24,
-    receiver_prev_bal: 0.13,
-    CASH_OUT: 0.08,
-    DEBIT: 0.0,
-    PAYMENT: 0.10,
-    TRANSFER: 0.22,
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 p-6 font-sans">
       <header className="w-full max-w-md bg-white text-gray-900 p-6 rounded-2xl shadow-xl mb-8 border border-gray-100 transition-all duration-300">
@@ -176,10 +166,10 @@ export default function Page() {
                 <strong>Transaction Amount:</strong> This has a moderate influence (21%) on the fraud probability. Larger amounts may slightly increase the risk, so entering a high value could elevate the fraud likelihood.
               </p>
               <p>
-                <strong>Sender's Previous Balance:</strong> This is the most significant factor (24%) in determining fraud. A low balance before the transaction might suggest higher risk, while a substantial balance could indicate a safer transaction.
+                <strong>Sender&apos;s Previous Balance:</strong> This is the most significant factor (24%) in determining fraud. A low balance before the transaction might suggest higher risk, while a substantial balance could indicate a safer transaction.
               </p>
               <p>
-                <strong>Receiver's Previous Balance:</strong> This has a lower impact (13%) but still matters. A receiver with a low balance might slightly raise the fraud probability, especially if paired with other risk factors.
+                <strong>Receiver&apos;s Previous Balance:</strong> This has a lower impact (13%) but still matters. A receiver with a low balance might slightly raise the fraud probability, especially if paired with other risk factors.
               </p>
               <p>
                 <strong>Transaction Type:</strong> The type of transaction plays a role, with <strong>Transfer</strong> (22%) and <strong>Withdrawal</strong> (8%) having more influence than <strong>Payment</strong> (10%) or <strong>Debit</strong> (0%). Choosing a <strong>Deposit</strong> typically aligns with lower risk, while a <strong>Transfer</strong> or <strong>Withdrawal</strong> might increase it slightly.
