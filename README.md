@@ -31,9 +31,11 @@ The model takes the following transaction details:
 | Field               | Type  | Description                                                   |
 | ------------------- | ----- | ------------------------------------------------------------- |
 | amount              | float | Transaction amount                                            |
-| sender\_prev\_bal   | float | Sender's balance before transaction                           |
-| receiver\_prev\_bal | float | Receiver's balance before transaction                         |
-| type                | enum  | Transaction type: Cash In, Cash Out, Debit, Payment, Transfer |
+| hour              | int | Hour of the day                                            |
+| transaction_type              | string | Intra Bank, Sender or Receiver transaction                                           |
+| sender\_prev\_bal   | float | Optional, Sender's balance before transaction                           |
+| receiver\_prev\_bal | float | Optional, Receiver's balance before transaction                         |
+| credit                | enum  | Transaction type: credit or debit |
 
 ---
 
