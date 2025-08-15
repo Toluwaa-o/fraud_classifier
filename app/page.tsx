@@ -1,20 +1,18 @@
 "use client";
 
 import { useState } from "react";
-
-type BulkResult = {
-  amount: number;
-  sender_prev_bal: number;
-  credit: number;
-  hour: number;
-  prediction: string;
-  fraud_probability: number;
-};
+import ResultCard from "./components/ResultsCard";
+import { BulkResult } from "@/types/BulkResults";
+import BulkResults from "./components/BulkResult";
+import SingleForm from "./components/SingleForm";
 
 export default function Page() {
+  const [transactionType, setTransactionType] = useState<string>("sender");
+
   const [formData, setFormData] = useState({
     amount: "",
     sender_prev_bal: "",
+    receiver_prev_bal: "",
     credit: "credit",
     hour: ""
   });
@@ -29,14 +27,11 @@ export default function Page() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-
     let newValue: string | number = value;
-
     if (type === "number") {
       const numericValue = parseFloat(value);
       newValue = isNaN(numericValue) || numericValue < 0 ? 0 : numericValue;
     }
-
     setFormData((prev) => ({ ...prev, [name]: newValue }));
   };
 
@@ -49,21 +44,31 @@ export default function Page() {
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+      const payload: Record<string, string | number> = {
+        amount: parseFloat(formData.amount),
+        hour: parseFloat(formData.hour),
+        credit: formData.credit,
+        transaction_type: transactionType
+      };
+
+      if (transactionType === "sender") {
+        payload.sender_prev_bal = parseFloat(formData.sender_prev_bal);
+      } else if (transactionType === "receiver") {
+        payload.receiver_prev_bal = parseFloat(formData.receiver_prev_bal);
+      } else if (transactionType === "intra") {
+        payload.sender_prev_bal = parseFloat(formData.sender_prev_bal);
+        payload.receiver_prev_bal = parseFloat(formData.receiver_prev_bal);
+      }
+
       const res = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: parseFloat(formData.amount),
-          sender_prev_bal: parseFloat(formData.sender_prev_bal),
-          hour: parseFloat(formData.hour),
-          credit: formData.credit,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-
       if (data) {
-        setPrediction(data);
+        setPrediction(JSON.stringify(data, null, 2));
       } else {
         setError("No prediction returned");
       }
@@ -87,12 +92,13 @@ export default function Page() {
 
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
-      const formData = new FormData();
-      formData.append("file", bulkFile);
+      const fileForm = new FormData();
+      fileForm.append("file", bulkFile);
+      fileForm.append("transaction_type", transactionType);
 
       const res = await fetch(`${API_URL}/predict-bulk`, {
         method: "POST",
-        body: formData,
+        body: fileForm,
       });
 
       const data = await res.json();
@@ -109,75 +115,74 @@ export default function Page() {
     }
   };
 
+  const handleTabChange = (type: string) => {
+    setTransactionType(type as string)
+    setFormData({
+      amount: "",
+      sender_prev_bal: "",
+      receiver_prev_bal: "",
+      credit: "credit",
+      hour: ""
+    })
+    setPrediction(null)
+    setBulkFile(null)
+    setBulkResults(null)
+    setPrediction(null)
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 p-6 font-sans">
-      <header className="w-full max-w-md bg-white text-gray-900 p-6 rounded-2xl shadow-xl mb-8 border border-gray-100 transition-all duration-300">
-        <h1 className="text-3xl font-bold mb-2 tracking-tight text-gray-800">Fraud Detection</h1>
-        <p className="text-gray-600 text-sm font-medium">Analyze transaction details with precision</p>
-      </header>
-
-      {/* Single Transaction Form */}
-      <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl border border-gray-100 mb-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <input
-            type="number"
-            name="amount"
-            placeholder="Transaction Amount"
-            value={formData.amount}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-200 rounded-xl p-4 bg-gray-50"
-          />
-          <input
-            type="number"
-            name="sender_prev_bal"
-            placeholder="Sender's Previous Balance"
-            value={formData.sender_prev_bal}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-200 rounded-xl p-4 bg-gray-50"
-          />
-          <input
-            type="number"
-            name="hour"
-            min="0"
-            max="23"
-            placeholder="Hour of the day"
-            value={formData.hour}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-200 rounded-xl p-4 bg-gray-50"
-          />
-          <select
-            title="transaction type"
-            name="type"
-            value={formData.credit}
-            onChange={handleChange}
-            className="w-full border border-gray-200 rounded-xl p-4 bg-gray-50"
-          >
-            <option value="credit">Credit</option>
-            <option value="debit">Debit</option>
-          </select>
-
+    <div className="min-h-screen flex flex-col items-center p-6">
+      <div className="fixed top-4 bg-white shadow-lg rounded-full flex space-x-4 px-4 py-2 z-50">
+        {["sender", "receiver", "intra"].map((type) => (
           <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white p-4 rounded-xl"
+            key={type}
+            onClick={() => handleTabChange(type)}
+            className={`px-3 py-1 rounded-full font-medium ${transactionType === type ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"
+              }`}
           >
-            {loading ? "Analyzing..." : "Analyze Transaction"}
+            {type.toUpperCase()}
           </button>
-        </form>
+        ))}
       </div>
 
-      <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl border border-gray-100">
+      <SingleForm handleChange={handleChange} handleSubmit={handleSubmit} loading={loading} formData={formData} transactionType={transactionType} />
+
+      {prediction && (() => {
+        const data = typeof prediction === 'string' ? JSON.parse(prediction) : prediction;
+
+        const fraudProb = (data.fraud * 100).toFixed(1);
+        const notFraudProb = (data.not_fraud * 100).toFixed(1);
+        return (
+          <div className="mt-6 space-y-3">
+            <ResultCard
+              label="Fraud Risk"
+              value={fraudProb}
+              color="text-red-800"
+              icon="⚠️"
+              bgColor="bg-red-50"
+              borderColor="border-red-200"
+            />
+            <ResultCard
+              label="Safe / Not Fraud"
+              value={notFraudProb}
+              color="text-green-800"
+              icon="✅"
+              bgColor="bg-green-50"
+              borderColor="border-green-200"
+            />
+          </div>
+        );
+      })()}
+
+      <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl mt-8">
         <h2 className="text-lg font-semibold mb-4">Bulk Fraud Prediction</h2>
         <form onSubmit={handleBulkUpload} className="space-y-4">
           <input
-            aria-label="transactions"
+            title="Transactions"
             type="file"
             accept=".csv,.xlsx,.xls"
             onChange={(e) => setBulkFile(e.target.files?.[0] || null)}
-            className="w-full border border-gray-200 rounded-xl p-3 bg-gray-50"
+            className="w-full border rounded-xl p-3 bg-gray-50"
           />
           <button
             type="submit"
@@ -188,49 +193,24 @@ export default function Page() {
           </button>
         </form>
 
-        {bulkResults && (
-          <div className="mt-4">
-            <h3 className="font-semibold mb-2">Predictions:</h3>
-            <pre className="bg-gray-100 p-3 rounded-lg overflow-auto text-sm">
-              {JSON.stringify(bulkResults, null, 2)}
-            </pre>
+        {bulkResults && bulkResults.length > 0 && (
+          <div className="mt-6 space-y-4">
+            {bulkResults.map((result, index) => {
+              const fraudProb = result.fraud_probability;
+              const notFraudProb = 100 - fraudProb;
+              const isFraud = result.prediction === "FRAUD";
+
+              return <BulkResults index={index} result={result} fraudProb={fraudProb} notFraudProb={notFraudProb} />
+            })}
           </div>
         )}
+
       </div>
 
       {error && (
-        <p className="mt-4 p-3 bg-red-50 text-red-800 border border-red-100 rounded-xl font-medium">
+        <p className="mt-4 p-3 bg-red-50 text-red-800 border rounded-xl font-medium">
           {error}
         </p>
-      )}
-
-      {(prediction || bulkResults) && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            How Your Inputs Affect the Probability
-          </h2>
-          <div className="space-y-4 text-gray-700">
-            <p>
-              <strong>Transaction Amount:</strong> This is by far the most influential factor
-              (≈53%) in determining fraud probability. Higher amounts significantly raise
-              the risk, while smaller transactions tend to be safer.
-            </p>
-            <p>
-              <strong>Hour of Transaction:</strong> Time of day contributes about 23% to the model’s
-              decision. Transactions during late-night or early-morning hours are generally riskier.
-            </p>
-            <p>
-              <strong>Credit Transaction:</strong> Whether the transaction is a credit (deposit) or
-              not influences fraud probability by ≈14%. Certain transaction types may be
-              more targeted by fraudsters.
-            </p>
-            <p>
-              <strong>Sender&apos;s Previous Balance:</strong> This has the smallest impact (≈9%),
-              but still matters. A low sender balance before the transaction may slightly
-              increase the chance of it being flagged as fraud.
-            </p>
-          </div>
-        </div>
       )}
     </div>
   );
