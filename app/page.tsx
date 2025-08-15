@@ -198,7 +198,6 @@ export default function Page() {
             {bulkResults.map((result, index) => {
               const fraudProb = result.fraud_probability;
               const notFraudProb = 100 - fraudProb;
-              const isFraud = result.prediction === "FRAUD";
 
               return <BulkResults index={index} result={result} fraudProb={fraudProb} notFraudProb={notFraudProb} />
             })}
