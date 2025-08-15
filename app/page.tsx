@@ -42,11 +42,7 @@ export default function Page() {
     try {
       let API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-      if (process.env.NODE_ENV === "development") {
-        API_URL = "http://localhost:3000";
-      }
-
-      const res = await fetch(`${API_URL}/api/py/predict`, {
+      const res = await fetch(`${API_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
