@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 
+type BulkResult = {
+  amount: number;
+  sender_prev_bal: number;
+  credit: number;
+  hour: number;
+  prediction: string;
+  fraud_probability: number;
+};
+
 export default function Page() {
   const [formData, setFormData] = useState({
     amount: "",
@@ -15,7 +24,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
 
   const [bulkFile, setBulkFile] = useState<File | null>(null);
-  const [bulkResults, setBulkResults] = useState<any[] | null>(null);
+  const [bulkResults, setBulkResults] = useState<BulkResult[] | null>(null);
   const [bulkLoading, setBulkLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
