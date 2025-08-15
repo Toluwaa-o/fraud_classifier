@@ -199,7 +199,7 @@ export default function Page() {
               const fraudProb = result.fraud_probability;
               const notFraudProb = 100 - fraudProb;
 
-              return <BulkResults index={index} result={result} fraudProb={fraudProb} notFraudProb={notFraudProb} />
+              return <BulkResults key={index} result={result} fraudProb={fraudProb} notFraudProb={notFraudProb} />
             })}
           </div>
         )}

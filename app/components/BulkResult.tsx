@@ -1,9 +1,8 @@
 import { BulkResult } from "@/types/BulkResults"
 
-const BulkResults = (prop:{index: number, result: BulkResult, notFraudProb: number, fraudProb: number}) => {
+const BulkResults = (prop: { result: BulkResult, notFraudProb: number, fraudProb: number }) => {
     return (
         <div
-            key={prop.index}
             className="p-4 border rounded-lg shadow-sm bg-white space-y-2"
         >
             <div className="flex justify-between text-sm text-gray-600">
