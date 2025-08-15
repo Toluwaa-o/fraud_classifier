@@ -40,7 +40,7 @@ export default function Page() {
     }
 
     try {
-      let API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
       const res = await fetch(`${API_URL}/predict`, {
         method: "POST",
