@@ -2,7 +2,7 @@ interface PredictionFormProps {
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     formData: {
         amount: string;
-        sender_prev_bal?: string;
+        account_number?: string;
         receiver_prev_bal?: string
         credit: string;
         hour: string;
@@ -29,9 +29,9 @@ const SingleForm = ({ handleSubmit, formData, transactionType, handleChange, loa
                 {transactionType !== "receiver" && (
                     <input
                         type="number"
-                        name="sender_prev_bal"
-                        placeholder="Sender's Initial Balance"
-                        value={formData.sender_prev_bal}
+                        name="account_number"
+                        placeholder="Sender's Account Number"
+                        value={formData.account_number}
                         onChange={handleChange}
                         required={transactionType !== "receiver"}
                         className="w-full border rounded-xl p-4 bg-gray-50"

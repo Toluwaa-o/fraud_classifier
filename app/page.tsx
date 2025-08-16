@@ -11,7 +11,7 @@ export default function Page() {
 
   const [formData, setFormData] = useState({
     amount: "",
-    sender_prev_bal: "",
+    account_number: "",
     receiver_prev_bal: "",
     credit: "credit",
     hour: ""
@@ -52,11 +52,11 @@ export default function Page() {
       };
 
       if (transactionType === "sender") {
-        payload.sender_prev_bal = parseFloat(formData.sender_prev_bal);
+        payload.account_number = parseInt(formData.account_number);
       } else if (transactionType === "receiver") {
         payload.receiver_prev_bal = parseFloat(formData.receiver_prev_bal);
       } else if (transactionType === "intra") {
-        payload.sender_prev_bal = parseFloat(formData.sender_prev_bal);
+        payload.account_number = parseInt(formData.account_number);
         payload.receiver_prev_bal = parseFloat(formData.receiver_prev_bal);
       }
 
@@ -119,7 +119,7 @@ export default function Page() {
     setTransactionType(type as string)
     setFormData({
       amount: "",
-      sender_prev_bal: "",
+      account_number: "",
       receiver_prev_bal: "",
       credit: "credit",
       hour: ""
@@ -198,8 +198,9 @@ export default function Page() {
             {bulkResults.map((result, index) => {
               const fraudProb = result.fraud_probability;
               const notFraudProb = 100 - fraudProb;
+              const isFraud = result.prediction === 'FRAUD' ? true : false
 
-              return <BulkResults key={index} result={result} fraudProb={fraudProb} notFraudProb={notFraudProb} />
+              return <BulkResults key={index} result={result} fraudProb={fraudProb} notFraudProb={notFraudProb} isFraud={isFraud} />
             })}
           </div>
         )}
