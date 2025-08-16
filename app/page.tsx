@@ -14,7 +14,6 @@ export default function Page() {
     account_number: "",
     receiver_prev_bal: "",
     credit: "credit",
-    hour: ""
   });
 
   const [prediction, setPrediction] = useState<null | string>(null);
@@ -43,10 +42,10 @@ export default function Page() {
 
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
+      const date = new Date()
       const payload: Record<string, string | number> = {
         amount: parseFloat(formData.amount),
-        hour: parseFloat(formData.hour),
+        hour: date.getHours(),
         credit: formData.credit,
         transaction_type: transactionType
       };
@@ -122,7 +121,6 @@ export default function Page() {
       account_number: "",
       receiver_prev_bal: "",
       credit: "credit",
-      hour: ""
     })
     setPrediction(null)
     setBulkFile(null)

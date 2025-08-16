@@ -5,7 +5,6 @@ interface PredictionFormProps {
         account_number?: string;
         receiver_prev_bal?: string
         credit: string;
-        hour: string;
     };
     transactionType: string;
     handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
@@ -49,18 +48,6 @@ const SingleForm = ({ handleSubmit, formData, transactionType, handleChange, loa
                         className="w-full border rounded-xl p-4 bg-gray-50"
                     />
                 )}
-
-                <input
-                    type="number"
-                    name="hour"
-                    min="0"
-                    max="23"
-                    placeholder="Hour of the day"
-                    value={formData.hour}
-                    onChange={handleChange}
-                    required
-                    className="w-full border rounded-xl p-4 bg-gray-50"
-                />
 
                 <select
                     title="Transaction type"
