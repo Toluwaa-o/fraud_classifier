@@ -1,6 +1,6 @@
 import { BulkResult } from "@/types/BulkResults"
 
-const BulkResults = (prop: { result: BulkResult, notFraudProb: Number, fraudProb: Number, isFraud: Boolean }) => {
+const BulkResults = (prop: { result: BulkResult, notFraudProb: number, fraudProb: number, isFraud: boolean }) => {
     return (
         <div
             className="p-4 border rounded-lg shadow-sm bg-white space-y-2"
