@@ -14,7 +14,7 @@ const ResultCard = ({
     borderColor: string;
 }) => (
     <div
-        className={`flex justify-between w-[30vw] items-center p-4 rounded-xl border ${bgColor} ${borderColor} shadow-sm`}
+        className={`flex justify-between w-[70vw] md:w-[30vw] items-center p-4 rounded-xl border ${bgColor} ${borderColor} shadow-sm`}
     >
         <span className={`font-medium ${color}`}>
             {icon} {label}
